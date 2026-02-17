@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iOS-Style Calculator</title>
+    <style>
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .calculator {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .display {
+            text-align: right;
+            color: white;
+            font-size: 60px;
+            margin-bottom: 20px;
+            font-weight: 200;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 20px;
+            min-height: 80px;
+            word-wrap: break-word;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .btn {
+            border-radius: 50%;
+            height: 72px;
+            width: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            user-select: none;
+        }
+        
+        .btn-number {
+            background-color: #333333;
+        }
+        
+        .btn-operation {
+            background-color: #FF9F0A;
+            font-size: 36px;
+        }
+        
+        .btn-function {
+            background-color: #A5A5A5;
+            color: black;
+        }
+        
+        .btn-zero {
+            grid-column: span 2;
+            width: 100%;
+            border-radius: 36px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="btn btn-function" onclick="clearDisplay()">C</button>
+            <button class="btn btn-function" onclick="toggleSign()">+/-</button>
+            <button class="btn btn-function" onclick="percentage()">%</button>
+            <button class="btn btn-operation" onclick="inputOperator('÷')">÷</button>
+            
+            <button class="btn btn-number" onclick="inputDigit('7')">7</button>
+            <button class="btn btn-number" onclick="inputDigit('8')">8</button>
+            <button class="btn btn-number" onclick="inputDigit('9')">9</button>
+            <button class="btn btn-operation" onclick="inputOperator('×')">×</button>
+            
+            <button class="btn btn-number" onclick="inputDigit('4')">4</button>
+            <button class="btn btn-number" onclick="inputDigit('5')">5</button>
+            <button class="btn btn-number" onclick="inputDigit('6')">6</button>
+            <button class="btn btn-operation" onclick="inputOperator('-')">-</button>
+            
+            <button class="btn btn-number" onclick="inputDigit('1')">1</button>
+            <button class="btn btn-number" onclick="inputDigit('2')">2</button>
+            <button class="btn btn-number" onclick="inputDigit('3')">3</button>
+            <button class="btn btn-operation" onclick="inputOperator('+')">+</button>
+            
+            <button class="btn btn-number btn-zero" onclick="inputDigit('0')">0</button>
+            <button class="btn btn-number" onclick="inputDecimal()">.</button>
+            <button class="btn btn-operation" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let expression = "";
+        const display = document.getElementById("display");
+
+        function updateDisplay() {
+            display.textContent = expression || "0";
+        }
+
+        function inputDigit(digit) {
+            expression += digit;
+            updateDisplay();
+        }
+
+        function inputOperator(operator) {
+            if (expression.length === 0) return;
+            const lastChar = expression.slice(-1);
+            if ('+−×÷'.includes(lastChar)) {
+                expression = expression.slice(0, -1) + operator;
+            } else {
+                expression += operator;
+            }
+            updateDisplay();
+        }
+
+        function inputDecimal() {
+            if (!expression || /[+−×÷]$/.test(expression)) {
+                expression += "0.";
+            } else if (!expression.includes(".")) {
+                expression += ".";
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            expression = "";
+            updateDisplay();
+        }
+
+        function toggleSign() {
+            if (expression && !isNaN(expression)) {
+                expression = String(-parseFloat(expression));
+                updateDisplay();
+            }
+        }
+
+        function percentage() {
+            if (expression && !isNaN(expression)) {
+                expression = String(parseFloat(expression) / 100);
+                updateDisplay();
+            }
+        }
+
+        function calculateResult() {
+            try {
+                let evalExpression = expression.replace(/×/g, '*').replace(/÷/g, '/');
+                let result = eval(evalExpression);
+                expression = String(result);
+                updateDisplay();
+            } catch (e) {
+                expression = "Error";
+                updateDisplay();
+            }
+        }
+    </script>
+</body>
+</html>
